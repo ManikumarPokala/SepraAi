@@ -209,7 +209,7 @@ async def run_single_test(test_func, args=None) -> bool:
         if args is None:
             args = []
             
-        if asyncio.iscoroutinefunction(test_func):
+        if inspect.iscoroutinefunction(test_func):
             await test_func(*args)
         else:
             test_func(*args)
@@ -244,7 +244,7 @@ async def run_test_module(module_name: str) -> tuple[int, int]:
 
     for func in test_functions:
         parametrize_args = getattr(func, "_parametrize_args", None)
-        if hasattr(func, "_is_async_test") or asyncio.iscoroutinefunction(func):
+        if hasattr(func, "_is_async_test") or inspect.iscoroutinefunction(func):
             # Enforce async execution
             func_to_run = func
         else:
