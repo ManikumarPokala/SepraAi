@@ -207,10 +207,13 @@ arq_connections.RedisSettings = lambda *args, **kwargs: None
 arq_connections.ArqRedis = lambda *args, **kwargs: None
 arq_worker = type(sys)("arq.worker")
 arq_worker.Job = lambda *args, **kwargs: None
+arq_jobs = type(sys)("arq.jobs")
+arq_jobs.Job = lambda *args, **kwargs: None
 
 sys.modules["arq"] = arq_module
 sys.modules["arq.connections"] = arq_connections
 sys.modules["arq.worker"] = arq_worker
+sys.modules["arq.jobs"] = arq_jobs
 
 # 5. Mock fastapi
 fastapi_module = type(sys)("fastapi")

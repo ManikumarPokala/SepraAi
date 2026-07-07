@@ -12,8 +12,8 @@ import asyncio
 import logging
 from typing import Any, Callable, Coroutine
 from arq import cron
+from arq.jobs import Job
 from arq.connections import RedisSettings, ArqRedis
-from arq.worker import Job
 
 from core.config import settings
 
