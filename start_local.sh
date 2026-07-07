@@ -12,7 +12,7 @@ mkdir -p ./infrastructure/volumes/postgres ./infrastructure/volumes/minio
 
 # 2. Spin up backing containers (Postgres, Redis, MinIO)
 echo "Spinning up backing Docker infrastructure..."
-docker-compose -f sepraai-backend/infrastructure/docker-compose.yml up -d postgres redis minio
+docker compose -f sepraai-backend/infrastructure/docker-compose.yml up -d postgres redis minio
 
 # 3. Wait for PostgreSQL connection availability
 echo "Waiting for PostgreSQL container availability..."

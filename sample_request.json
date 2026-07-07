@@ -1,0 +1,39 @@
+{
+  "prompt": "An interactive explanation of how Raft consensus handles leader election and log replication.",
+  "duration_limit": 120,
+  "style_manifest": {
+    "dimensions": [1920, 1080],
+    "fps": 60,
+    "theme_palette": {
+      "primary": "#3B82F6",
+      "secondary": "#10B981",
+      "background": "#0F172A"
+    },
+    "font_family": "Outfit",
+    "global_rendering_type": "manim",
+    "scene_checkpoints": [
+      {
+        "checkpoint_id": "9a7b6c5d-4e3f-2a1b-0c9d-8e7f6a5b4c3d",
+        "title": "Initialization Phase",
+        "description": "Initialize three nodes in follower states.",
+        "duration_seconds": 15.0,
+        "ast_safe": true,
+        "evaluation_verdict": {
+          "status": "passed",
+          "details": "Follower initialization satisfies visual grids."
+        }
+      },
+      {
+        "checkpoint_id": "8a7b6c5d-4e3f-2a1b-0c9d-8e7f6a5b4c3e",
+        "title": "Leader Election Trigger",
+        "description": "Timeout triggers election. Node 1 sends requestVotes RPC.",
+        "duration_seconds": 30.0,
+        "ast_safe": true,
+        "evaluation_verdict": {
+          "status": "passed",
+          "details": "Election visuals scaled to word boundaries."
+        }
+      }
+    ]
+  }
+}
