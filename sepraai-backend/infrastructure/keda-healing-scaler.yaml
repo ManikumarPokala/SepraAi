@@ -22,9 +22,10 @@ spec:
         # ARQ uses a sorted set or list under Redis.
         # We query the cardinality of the arq:queue set containing healing jobs.
         address: sepraai-redis:6379
-        dbIndex: "0"
+        databaseIndex: "0"
         passwordFromEnv: REDIS_PASSWORD
         # Scale triggers if at least 1 job is pending in the queue key
         key: "arq:queue"
+        dataType: zset
         value: "1"
         enableTLS: "false"
