@@ -1,5 +1,5 @@
 {
-  "prompt": "An interactive explanation of how Raft consensus handles leader election and log replication.",
+  "original_prompt": "An interactive explanation of how Raft consensus handles leader election and log replication.",
   "duration_limit": 120,
   "style_manifest": {
     "dimensions": [1920, 1080],
