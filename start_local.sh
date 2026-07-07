@@ -29,5 +29,5 @@ python3 sepraai-backend/db_init.py
 
 echo "=== System Bootstrapped Successfully! ==="
 echo "Backing services are up. You can now launch workers and FastAPI Gateway:"
-echo " - Run API Gateway: uvicorn api.routes:router --reload"
+echo " - Run API Gateway: uvicorn api.main:app --reload"
 echo " - Run ARQ Workers: arq orchestration.arq_broker.WorkerSettings"
