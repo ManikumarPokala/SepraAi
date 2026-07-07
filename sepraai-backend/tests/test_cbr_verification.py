@@ -23,11 +23,11 @@ from orchestration.time_scaler import verify_cbr_audio_sync, get_wav_sample_dura
 @patch("orchestration.time_scaler.get_wav_sample_duration")
 @patch("orchestration.time_scaler.get_container_duration")
 def test_cbr_audio_sync_drift(
-    mock_get_container,
-    mock_get_sample,
     container_dur,
     sample_dur,
     should_raise,
+    mock_get_container,
+    mock_get_sample,
 ):
     """Asserts that verify_cbr_audio_sync enforces the 1ms drift limit boundary (Patch #6)."""
     mock_get_container.return_value = container_dur

@@ -42,7 +42,7 @@ def run_ast_lint_allowlist(code: str, filename: str = "generated_code.py") -> bo
         # Check call expressions targeting builtins or exec/eval
         elif isinstance(node, ast.Call):
             if isinstance(node.func, ast.Name):
-                if node.func.id in ("eval", "exec", "open", "compile", "__import__"):
+                if node.func.id in ("eval", "exec", "open", "compile", "__import__", "getattr"):
                     suspicious_nodes.append(f"Call to dynamic/IO builtin '{node.func.id}' at line {node.lineno}")
             elif isinstance(node.func, ast.Attribute):
                 # e.g., os.system, subprocess.run
