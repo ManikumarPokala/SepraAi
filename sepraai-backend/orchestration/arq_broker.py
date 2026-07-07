@@ -92,6 +92,7 @@ class WorkerSettings:
     functions = [
         "workers.run_worker_manim.render_manim_chunk_task",
         "workers.run_worker_remotion.render_remotion_chunk_task",
-        "workers.run_worker_gpu.align_gpu_chunk_task",
-        "workers.run_worker_healing.healing_gpu_chunk_task",
+        "workers.run_worker_gpu.run_gpu_alignment_task",
+        "workers.run_worker_gpu.run_gpu_nvenc_encode_task",
+        "workers.run_worker_healing.run_healing_orchestration_task",
     ]
