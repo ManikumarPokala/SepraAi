@@ -9,6 +9,7 @@ Implements Gateway Backpressure (Patch #9):
 from __future__ import annotations
 
 import logging
+from typing import Any
 from fastapi import Request, Response, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint

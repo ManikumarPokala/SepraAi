@@ -15,6 +15,7 @@ import time
 import uuid
 from typing import Any
 
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
@@ -99,7 +100,6 @@ async def execute_healing_cycle(
 
     async with get_db_session() as session:
         # Determine attempt number by counting existing entries
-        from sqlalchemy import func, select
         count_stmt = select(func.count(HealingAttempt.id)).where(HealingAttempt.chunk_id == chunk_id)
         count_res = await session.execute(count_stmt)
         attempt_count = count_res.scalar_one()
