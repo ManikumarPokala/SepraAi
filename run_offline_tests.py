@@ -59,8 +59,27 @@ class MockConfigDict(dict):
 class MockBaseModel:
     model_config = {}
     def __init__(self, **data):
+        # Apply class-level defaults and wrap URLs if necessary
+        for k, v in self.__class__.__dict__.items():
+            if not k.startswith("_") and not callable(v):
+                if isinstance(v, str) and (v.startswith("redis") or v.startswith("postgres")):
+                    setattr(self, k, MockUrl(v))
+                else:
+                    setattr(self, k, v)
+            elif not k.startswith("_") and callable(v):
+                try:
+                    # Instantiate default factories (e.g. list, dict)
+                    setattr(self, k, v())
+                except TypeError:
+                    setattr(self, k, v)
         for k, v in data.items():
-            setattr(self, k, v)
+            if v is None and k in self.__class__.__dict__:
+                pass
+            else:
+                if isinstance(v, str) and (v.startswith("redis") or v.startswith("postgres")):
+                    setattr(self, k, MockUrl(v))
+                else:
+                    setattr(self, k, v)
     @classmethod
     def model_validate(cls, data):
         return cls(**data)
@@ -74,15 +93,7 @@ def mock_field_validator(*args, **kwargs):
     return decorator
 
 class MockBaseSettings(MockBaseModel):
-    def __init__(self, **data):
-        # Settle class defaults
-        for k, v in self.__class__.__dict__.items():
-            if not k.startswith("_") and not callable(v):
-                if isinstance(v, str) and (v.startswith("redis") or v.startswith("postgres")):
-                    setattr(self, k, MockUrl(v))
-                else:
-                    setattr(self, k, v)
-        super().__init__(**data)
+    pass
 
 class MockUrl:
     def __init__(self, url_str=""):
@@ -96,7 +107,7 @@ class MockUrl:
 # Stub Pydantic Modules
 pydantic_module = type(sys)("pydantic")
 pydantic_module.BaseModel = MockBaseModel
-pydantic_module.Field = lambda default=None, **kwargs: default
+pydantic_module.Field = lambda default=None, default_factory=None, **kwargs: default_factory if default_factory else default
 pydantic_module.field_validator = mock_field_validator
 pydantic_module.ConfigDict = MockConfigDict
 pydantic_module.PostgresDsn = MockUrl
@@ -200,6 +211,54 @@ sys.modules["arq"] = arq_module
 sys.modules["arq.connections"] = arq_connections
 sys.modules["arq.worker"] = arq_worker
 
+# 5. Mock fastapi
+fastapi_module = type(sys)("fastapi")
+class MockFastAPI:
+    def add_middleware(self, *args, **kwargs): pass
+    def include_router(self, *args, **kwargs): pass
+    def get(self, *args, **kwargs): return lambda f: f
+class MockRequestUrl:
+    def __init__(self):
+        self.path = "/generate"
+class MockRequest:
+    url = MockRequestUrl()
+    method = "POST"
+class MockHTTPException(Exception):
+    def __init__(self, status_code, detail=None):
+        self.status_code = status_code
+        self.detail = detail
+class MockResponse:
+    pass
+
+fastapi_module.FastAPI = MockFastAPI
+fastapi_module.Request = MockRequest
+fastapi_module.Response = MockResponse
+fastapi_module.HTTPException = MockHTTPException
+fastapi_module.status = type(sys)("status")
+fastapi_module.status.HTTP_429_TOO_MANY_REQUESTS = 429
+fastapi_module.Header = lambda *args, **kwargs: None
+fastapi_module.Depends = lambda *args, **kwargs: None
+
+fastapi_responses = type(sys)("fastapi.responses")
+class MockJSONResponse:
+    def __init__(self, status_code, content=None, headers=None):
+        self.status_code = status_code
+        self.content = content
+        self.headers = {k.lower(): str(v) for k, v in (headers or {}).items()}
+        import json
+        self.body = json.dumps(content).encode() if content else b""
+fastapi_responses.JSONResponse = MockJSONResponse
+
+sys.modules["fastapi"] = fastapi_module
+sys.modules["fastapi.responses"] = fastapi_responses
+sys.modules["starlette.middleware.base"] = type(sys)("starlette.middleware.base")
+class MockBaseHTTPMiddleware:
+    def __init__(self, app, *args, **kwargs):
+        self.app = app
+sys.modules["starlette.middleware.base"].BaseHTTPMiddleware = MockBaseHTTPMiddleware
+sys.modules["starlette.middleware.base"].RequestResponseEndpoint = Any
+
+
 
 # ── Dynamic Test Execution and Runner ─────────────────────────────────────
 
@@ -283,7 +342,9 @@ async def main():
         "tests.test_sandbox_escape",
         "tests.test_idempotency",
         "tests.test_splitter_boundaries",
-        "tests.test_cbr_verification"
+        "tests.test_cbr_verification",
+        "tests.test_consensus_node",
+        "tests.test_backpressure"
     ]
 
     total_passed = 0

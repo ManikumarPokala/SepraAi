@@ -50,7 +50,6 @@ class QueueBackpressureMiddleware(BaseHTTPMiddleware):
         if request.url.path == "/generate" and request.method == "POST":
             queue_depth = await get_redis_queue_depth(self.redis_client)
             limit = settings.BACKPRESSURE_QUEUE_DEPTH_LIMIT
-
             if queue_depth >= limit:
                 logger.warning(
                     "Backpressure triggered! Queue depth is at %d (Limit: %d). "
