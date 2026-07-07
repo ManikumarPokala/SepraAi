@@ -89,4 +89,9 @@ class WorkerSettings:
     job_timeout = settings.ARQ_JOB_TIMEOUT
 
     # List of functions mapping workers to task keys
-    functions = []
+    functions = [
+        "workers.run_worker_manim.render_manim_chunk_task",
+        "workers.run_worker_remotion.render_remotion_chunk_task",
+        "workers.run_worker_gpu.align_gpu_chunk_task",
+        "workers.run_worker_healing.healing_gpu_chunk_task",
+    ]
