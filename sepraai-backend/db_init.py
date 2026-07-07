@@ -19,7 +19,10 @@ logger = logging.getLogger(__name__)
 async def init_database() -> None:
     logger.info("Initializing database metadata...")
     # Drop/create tables (for testing, in production migrations are managed via Alembic)
+    from sqlalchemy import text
     async with engine.begin() as conn:
+        logger.info("Enabling pgvector extension...")
+        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
         logger.info("Creating all table schemas...")
         await conn.run_sync(Base.metadata.create_all)
         logger.info("Schema creation completed.")
