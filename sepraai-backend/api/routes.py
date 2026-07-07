@@ -63,6 +63,8 @@ async def generate_curriculum(payload: CurriculumJobCreate) -> Any:
     Triggers creation of a new Curriculum Job.
     Subject to Downstream Backpressure checks in middleware.
     """
+    import hashlib
+    from core.models import GlobalContextManifest, AtomicBeat, Chunk, ChunkStatus
     logger.info("Initializing creation request for prompt: %s...", payload.original_prompt[:30])
 
     async with get_db_session() as session:
@@ -72,6 +74,72 @@ async def generate_curriculum(payload: CurriculumJobCreate) -> Any:
                 status=JobStatus.PENDING,
             )
             session.add(job)
+
+            # Create a style GCM
+            gcm = GlobalContextManifest(
+                curriculum_job=job,
+                style_data={"primary": "#3B82F6", "secondary": "#10B981", "background": "#0F172A"},
+                is_locked=False,
+            )
+            session.add(gcm)
+
+            # Create VideoPartJob 1 (Chapter 1)
+            part1 = VideoPartJob(
+                curriculum_job=job,
+                gcm=gcm,
+                part_number=1,
+                status=JobStatus.PENDING,
+            )
+            session.add(part1)
+
+            # Create AtomicBeat 1
+            beat1 = AtomicBeat(
+                video_part_job=part1,
+                beat_index=1,
+                narration_text="Initialize follower nodes.",
+                visual_instructions="Show three nodes in follower states.",
+                embedding=[0.0] * 1536,
+            )
+            session.add(beat1)
+
+            # Create Chunk 1
+            chunk1 = Chunk(
+                video_part_job=part1,
+                atomic_beat=beat1,
+                chunk_index=1,
+                status=ChunkStatus.PENDING,
+                content_hash=hashlib.sha256(b"chunk1_code").hexdigest(),
+            )
+            session.add(chunk1)
+
+            # Create VideoPartJob 2 (Chapter 2)
+            part2 = VideoPartJob(
+                curriculum_job=job,
+                gcm=gcm,
+                part_number=2,
+                status=JobStatus.PENDING,
+            )
+            session.add(part2)
+
+            # Create AtomicBeat 2
+            beat2 = AtomicBeat(
+                video_part_job=part2,
+                beat_index=1,
+                narration_text="Leader election trigger.",
+                visual_instructions="Show node 1 becoming candidate and requestVotes.",
+                embedding=[0.0] * 1536,
+            )
+            session.add(beat2)
+
+            # Create Chunk 2
+            chunk2 = Chunk(
+                video_part_job=part2,
+                atomic_beat=beat2,
+                chunk_index=1,
+                status=ChunkStatus.PENDING,
+                content_hash=hashlib.sha256(b"chunk2_code").hexdigest(),
+            )
+            session.add(chunk2)
 
         # Refresh to populate ID
         await session.refresh(job)
