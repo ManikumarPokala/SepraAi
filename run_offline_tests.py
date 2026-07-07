@@ -201,6 +201,7 @@ sys.modules["redis.asyncio"] = redis_asyncio_module
 
 arq_module = type(sys)("arq")
 arq_module.cron = lambda *args, **kwargs: None
+arq_module.Job = lambda *args, **kwargs: None
 arq_connections = type(sys)("arq.connections")
 arq_connections.RedisSettings = lambda *args, **kwargs: None
 arq_connections.ArqRedis = lambda *args, **kwargs: None
