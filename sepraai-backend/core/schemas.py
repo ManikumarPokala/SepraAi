@@ -160,3 +160,11 @@ class VideoPartJobResponse(BaseModel):
     status: JobStatus
     approved_by: str | None
     created_at: Any
+
+
+class CurriculumJobDetailResponse(BaseModel):
+    id: uuid.UUID
+    status: JobStatus
+    original_prompt: str
+    video_parts: list[VideoPartJobResponse] = []
+    created_at: Any

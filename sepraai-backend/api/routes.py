@@ -15,7 +15,7 @@ from sqlalchemy import select
 
 from core.database import get_db_session
 from core.models import CurriculumJob, VideoPartJob, JobStatus
-from core.schemas import CurriculumJobCreate, CurriculumJobResponse, VideoPartJobResponse
+from core.schemas import CurriculumJobCreate, CurriculumJobResponse, VideoPartJobResponse, CurriculumJobDetailResponse
 from core.concurrency import optimistic_update
 
 logger = logging.getLogger(__name__)
@@ -76,6 +76,25 @@ async def generate_curriculum(payload: CurriculumJobCreate) -> Any:
         # Refresh to populate ID
         await session.refresh(job)
         return job
+
+
+@router.get("/status/curriculum/{job_id}", response_model=CurriculumJobDetailResponse)
+async def get_curriculum_job_status(job_id: uuid.UUID) -> Any:
+    """
+    Retrieves status of a parent CurriculumJob and its associated VideoPartJobs.
+    """
+    async with get_db_session() as session:
+        from sqlalchemy.orm import selectinload
+        stmt = select(CurriculumJob).options(selectinload(CurriculumJob.video_parts)).where(CurriculumJob.id == job_id)
+        res = await session.execute(stmt)
+        curriculum_job = res.scalar_one_or_none()
+
+        if not curriculum_job:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"CurriculumJob {job_id} not found."
+            )
+        return curriculum_job
 
 
 @router.get("/status/{job_id}", response_model=VideoPartJobResponse)
