@@ -188,7 +188,7 @@ class VideoPartJob(Base):
         nullable=False,
     )
     approved_by: Mapped[str | None] = mapped_column(
-        String(255), nullable=True, description="RBAC user ID who approved this part"
+        String(255), nullable=True, comment="RBAC user ID who approved this part"
     )
     version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
@@ -258,7 +258,7 @@ class Chunk(Base):
     atomic_beat_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("atomic_beats.id", ondelete="RESTRICT"),
         nullable=False,
-        description="Traceability back to grounded script sentence (Patch #2)",
+        comment="Traceability back to grounded script sentence (Patch #2)",
     )
     chunk_index: Mapped[int] = mapped_column(Integer, nullable=False)
     audio_path: Mapped[str | None] = mapped_column(String(1024), nullable=True)
@@ -271,7 +271,7 @@ class Chunk(Base):
     content_hash: Mapped[str] = mapped_column(
         String(64),
         nullable=False,
-        description="Deterministic hash of inputs for idempotency checks",
+        comment="Deterministic hash of inputs for idempotency checks",
     )
     version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
