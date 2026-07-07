@@ -1,0 +1,19 @@
+# SepraAI v2.7 — Prometheus Monitoring Configuration
+# Configures scraping targets for queues and gateways.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # ── API Gateway Metrics ──────────────────────────────────────────────────
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:8000']
+    metrics_path: '/metrics'
+
+  # ── Worker Pool Metrices (if using exporter) ────────────────────────────
+  - job_name: 'arq-worker-pools'
+    static_configs:
+      - targets: ['api-gateway:8000'] # FastAPI gateway re-exports queue depth gauges
+    metrics_path: '/metrics/queues'

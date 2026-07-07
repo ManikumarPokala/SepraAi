@@ -1,0 +1,35 @@
+# SepraAI v2.7 — GPU Healing Worker Dockerfile
+# Configures CUDA runtime and warm vLLM layers to run self-healing tasks.
+
+FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
+
+WORKDIR /app
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    python3 \
+    python3-pip \
+    python3-dev \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install vLLM, Torch, and SQLite/Postgres libraries
+RUN pip3 install --no-cache-dir \
+    vllm \
+    sqlalchemy \
+    asyncpg \
+    pydantic \
+    pydantic-settings \
+    pgvector \
+    redis \
+    arq \
+    boto3
+
+# Copy codebase
+COPY ./sepraai-backend /app/sepraai-backend
+ENV PYTHONPATH=/app/sepraai-backend
+
+# Start GPU healing task queue
+CMD ["arq", "orchestration.arq_broker.WorkerSettings"]

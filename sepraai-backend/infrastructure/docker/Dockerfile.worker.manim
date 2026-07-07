@@ -1,0 +1,38 @@
+# SepraAI v2.7 — Manim CPU Worker Dockerfile
+# Satisfies Patch #11: Immutability/sandbox configuration at scheduler, not container runtime.
+# Enforces basic libraries and compiles Manim script models.
+
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install system dependencies required by Manim and ffmpeg muxer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    ffmpeg \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install python packages
+RUN pip install --no-cache-dir \
+    manim \
+    sqlalchemy \
+    asyncpg \
+    pydantic \
+    pydantic-settings \
+    pgvector \
+    redis \
+    arq \
+    boto3
+
+# Copy codebase
+COPY ./sepraai-backend /app/sepraai-backend
+ENV PYTHONPATH=/app/sepraai-backend
+
+# Start ARQ worker process targeting the Manim queue
+CMD ["arq", "orchestration.arq_broker.WorkerSettings"]

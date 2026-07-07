@@ -1,0 +1,44 @@
+# SepraAI v2.7 — API Gateway Dockerfile
+# Production-ready multi-stage build pattern.
+
+FROM python:3.10-slim AS builder
+
+WORKDIR /build
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install python dependencies in scoped local path
+RUN pip install --no-cache-dir --user \
+    fastapi \
+    uvicorn \
+    sqlalchemy \
+    asyncpg \
+    pydantic \
+    pydantic-settings \
+    pgvector \
+    redis \
+    arq \
+    boto3
+
+FROM python:3.10-slim AS runner
+
+WORKDIR /app
+
+# Copy python packages from builder
+COPY --from=builder /root/.local /root/.local
+ENV PATH=/root/.local/bin:$PATH
+
+# Copy app code
+COPY ./sepraai-backend /app/sepraai-backend
+
+# Set Python Path to find module layers
+ENV PYTHONPATH=/app/sepraai-backend
+
+EXPOSE 8000
+
+# Start API service
+CMD ["uvicorn", "api.routes:router", "--host", "0.0.0.0", "--port", "8000"]

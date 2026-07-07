@@ -1,0 +1,30 @@
+# SepraAI v2.7 — KEDA Auto-scaler Config
+# Satisfies Patch #8 (KEDA Rule): Scales healing GPU workers to zero when the queue is empty,
+# mitigating idle compute costs.
+
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: sepraai-healing-scaler
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: sepraai-worker-healing # Targets the persistently warm GPU pool when needed
+  minReplicaCount: 0            # Scale-to-Zero when no healing tasks exist (Patch #8)
+  maxReplicaCount: 5
+  cooldownPeriod: 300           # Wait 5 minutes of idle state before scale-down
+  pollingInterval: 15           # Poll queue size every 15 seconds
+  triggers:
+    - type: redis
+      metadata:
+        # ARQ uses a sorted set or list under Redis.
+        # We query the cardinality of the arq:queue set containing healing jobs.
+        address: sepraai-redis:6379
+        dbIndex: "0"
+        passwordFromEnv: REDIS_PASSWORD
+        # Scale triggers if at least 1 job is pending in the queue key
+        key: "arq:queue"
+        value: "1"
+        enableTLS: "false"
