@@ -5,6 +5,11 @@ Bootstraps the PostgreSQL database schema:
 1. Generates all mapped tables using SQLAlchemy metadata.
 2. Invokes run_migrations() DDL to create the GCM BEFORE UPDATE triggers (Patch #13).
 """
+import sys
+import os
+# Auto-inject paths for database init when run directly
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.venv/lib/python3.14/site-packages")))
 
 import asyncio
 import logging

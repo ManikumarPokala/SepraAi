@@ -19,6 +19,8 @@ import redis.asyncio as aioredis
 
 from core.config import settings
 from api.routes import router
+from api.chemistry_routes import router as chemistry_router
+from api.quiz_routes import router as quiz_router
 from api.backpressure import QueueBackpressureMiddleware, get_redis_queue_depth
 
 logging.basicConfig(level=logging.INFO)
@@ -35,6 +37,14 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
     global redis_client
     logger.info("Initializing API Gateway startup hooks...")
+
+    # Run database migrations and schema setup automatically
+    try:
+        from db_init import init_database
+        await init_database()
+        logger.info("Database initialized successfully at startup.")
+    except Exception as e:
+        logger.error("Failed to initialize database at startup: %s", e)
 
     # Initialize async Redis pool matching setting connections
     redis_client = aioredis.from_url(
@@ -81,6 +91,8 @@ app.add_middleware(LazyRedisMiddleware)
 
 # Include core routes
 app.include_router(router)
+app.include_router(chemistry_router)
+app.include_router(quiz_router)
 
 
 # ── Monitoring endpoints ──────────────────────────────────────────────────

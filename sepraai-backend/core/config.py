@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 
     # ── Database ──────────────────────────────────────────────────────────
     DATABASE_URL: PostgresDsn = Field(
-        default="postgresql+asyncpg://sepraai:sepraai@localhost:5432/sepraai",
+        default="postgresql+asyncpg://sepraai:sepraai@127.0.0.1:5432/sepraai",
         description="Async Postgres connection string (asyncpg driver required)",
     )
     DB_POOL_SIZE: int = Field(default=20, ge=5, le=100)
@@ -36,7 +36,7 @@ class Settings(BaseSettings):
 
     # ── Redis / ARQ ──────────────────────────────────────────────────────
     REDIS_URL: RedisDsn = Field(
-        default="redis://localhost:6379/0",
+        default="redis://127.0.0.1:6379/0",
         description="Redis used by ARQ for task queues",
     )
     ARQ_JOB_TIMEOUT: int = Field(

@@ -147,6 +147,7 @@ class MockSelect:
     def where(self, *args, **kwargs): return self
     def order_by(self, *args, **kwargs): return self
     def limit(self, *args, **kwargs): return self
+    def options(self, *args, **kwargs): return self
 
 sqlalchemy_module.select = lambda *args, **kwargs: MockSelect()
 sqlalchemy_module.update = lambda *args, **kwargs: MockSelect()
@@ -171,7 +172,11 @@ sqlalchemy_orm = type(sys)("sqlalchemy.orm")
 sqlalchemy_orm.DeclarativeBase = MockBase
 sqlalchemy_orm.relationship = lambda *args, **kwargs: None
 sqlalchemy_orm.Mapped = Any
-sqlalchemy_orm.mapped_column = lambda *args, **kwargs: None
+class MockMappedColumn:
+    def desc(self): return self
+    def asc(self): return self
+sqlalchemy_orm.mapped_column = lambda *args, **kwargs: MockMappedColumn()
+sqlalchemy_orm.selectinload = lambda *args, **kwargs: None
 
 sqlalchemy_types = type(sys)("sqlalchemy.types")
 class MockTypeDecorator:
@@ -221,25 +226,42 @@ class MockFastAPI:
     def add_middleware(self, *args, **kwargs): pass
     def include_router(self, *args, **kwargs): pass
     def get(self, *args, **kwargs): return lambda f: f
+
+class MockAPIRouter:
+    def __init__(self, *args, **kwargs): pass
+    def post(self, *args, **kwargs): return lambda f: f
+    def get(self, *args, **kwargs): return lambda f: f
+
+class MockBackgroundTasks:
+    def add_task(self, *args, **kwargs): pass
+
 class MockRequestUrl:
     def __init__(self):
         self.path = "/generate"
+
 class MockRequest:
     url = MockRequestUrl()
     method = "POST"
+
 class MockHTTPException(Exception):
     def __init__(self, status_code, detail=None):
         self.status_code = status_code
         self.detail = detail
+
 class MockResponse:
     pass
 
 fastapi_module.FastAPI = MockFastAPI
+fastapi_module.APIRouter = MockAPIRouter
+fastapi_module.BackgroundTasks = MockBackgroundTasks
 fastapi_module.Request = MockRequest
 fastapi_module.Response = MockResponse
 fastapi_module.HTTPException = MockHTTPException
 fastapi_module.status = type(sys)("status")
 fastapi_module.status.HTTP_429_TOO_MANY_REQUESTS = 429
+fastapi_module.status.HTTP_400_BAD_REQUEST = 400
+fastapi_module.status.HTTP_404_NOT_FOUND = 404
+fastapi_module.status.HTTP_201_CREATED = 201
 fastapi_module.Header = lambda *args, **kwargs: None
 fastapi_module.Depends = lambda *args, **kwargs: None
 
@@ -251,7 +273,15 @@ class MockJSONResponse:
         self.headers = {k.lower(): str(v) for k, v in (headers or {}).items()}
         import json
         self.body = json.dumps(content).encode() if content else b""
+
+class MockFileResponse:
+    def __init__(self, path, media_type=None, filename=None):
+        self.path = path
+        self.media_type = media_type
+        self.filename = filename
+
 fastapi_responses.JSONResponse = MockJSONResponse
+fastapi_responses.FileResponse = MockFileResponse
 
 sys.modules["fastapi"] = fastapi_module
 sys.modules["fastapi.responses"] = fastapi_responses
@@ -348,8 +378,16 @@ async def main():
         "tests.test_splitter_boundaries",
         "tests.test_cbr_verification",
         "tests.test_consensus_node",
-        "tests.test_backpressure"
+        "tests.test_backpressure",
+        "tests.test_chemistry_service",
+        "tests.test_quiz_service"
     ]
+
+    if len(sys.argv) > 1:
+        requested = sys.argv[1:]
+        test_modules = [m for m in test_modules if any(req in m for req in requested)]
+        if not test_modules:
+            test_modules = requested
 
     total_passed = 0
     total_failed = 0

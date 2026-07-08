@@ -168,3 +168,50 @@ class CurriculumJobDetailResponse(BaseModel):
     original_prompt: str
     video_parts: list[VideoPartJobResponse] = []
     created_at: Any
+
+
+# ── Chemistry Video Service Schemas ───────────────────────────────────────
+
+class ChemistryVideoJobCreate(BaseModel):
+    concept: str = Field(..., min_length=3)
+
+
+class ChemistryVideoJobResponse(BaseModel):
+    id: uuid.UUID
+    concept: str
+    status: str
+    video_path: str | None = None
+    error_message: str | None = None
+    retry_count: int
+    created_at: Any
+    updated_at: Any
+
+
+# ── Quiz Service Schemas ──────────────────────────────────────────────────
+
+class QuizJobCreate(BaseModel):
+    subject: str = Field(..., min_length=3)
+    difficulty: str = Field(..., description="Difficulty level, e.g. Beginner, Intermediate, Advanced")
+    num_items: int = Field(..., ge=1, le=20)
+
+
+class QuizItemResponse(BaseModel):
+    id: uuid.UUID
+    question: str
+    choices: list[str]
+    correct_answer: str
+    explanation: str
+    cost_usd: float
+    attempts: int
+
+
+class QuizJobResponse(BaseModel):
+    id: uuid.UUID
+    subject: str
+    difficulty: str
+    num_items: int
+    status: str
+    total_cost: float
+    created_at: Any
+    updated_at: Any
+    items: list[QuizItemResponse] = []

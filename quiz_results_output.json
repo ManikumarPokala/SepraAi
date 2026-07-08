@@ -1,0 +1,238 @@
+{
+  "test_cases": [
+    {
+      "subject": "Secondary school chemistry",
+      "difficulty": "Beginner",
+      "num_items": 5,
+      "total_cost_usd": 0.0225,
+      "items": [
+        {
+          "item_number": 1,
+          "question": "What is the chemical symbol for water?",
+          "choices": [
+            "H2O",
+            "CO2",
+            "NaCl",
+            "O2"
+          ],
+          "correct_answer": "H2O",
+          "explanation": "H2O represents water, consisting of two hydrogen atoms and one oxygen atom.",
+          "cost_usd": 0.0075,
+          "attempts_required": 2
+        },
+        {
+          "item_number": 2,
+          "question": "Which subatomic particle has a negative charge?",
+          "choices": [
+            "Proton",
+            "Neutron",
+            "Electron",
+            "Nucleus"
+          ],
+          "correct_answer": "Electron",
+          "explanation": "Electrons carry a negative charge and orbit the nucleus of an atom.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        },
+        {
+          "item_number": 3,
+          "question": "What is the pH of pure water?",
+          "choices": [
+            "0",
+            "7",
+            "14",
+            "1"
+          ],
+          "correct_answer": "7",
+          "explanation": "Pure water is neutral with a pH value of 7.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        },
+        {
+          "item_number": 4,
+          "question": "What state of matter has a definite volume but no definite shape?",
+          "choices": [
+            "Solid",
+            "Liquid",
+            "Gas",
+            "Plasma"
+          ],
+          "correct_answer": "Liquid",
+          "explanation": "Liquids have a definite volume but conform to the shape of their container.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        },
+        {
+          "item_number": 5,
+          "question": "What is the atomic number of Hydrogen?",
+          "choices": [
+            "1",
+            "2",
+            "6",
+            "8"
+          ],
+          "correct_answer": "1",
+          "explanation": "Hydrogen is the simplest element, containing exactly one proton in its nucleus.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        }
+      ]
+    },
+    {
+      "subject": "Secondary school chemistry",
+      "difficulty": "Advanced",
+      "num_items": 5,
+      "total_cost_usd": 0.0225,
+      "items": [
+        {
+          "item_number": 1,
+          "question": "Which of the following describes the Heisenberg Uncertainty Principle?",
+          "choices": [
+            "It is impossible to know both position and momentum of a particle simultaneously.",
+            "Energy is quantized in discrete packets.",
+            "Electrons fill lower energy orbitals first.",
+            "No two electrons can have the same set of quantum numbers."
+          ],
+          "correct_answer": "It is impossible to know both position and momentum of a particle simultaneously.",
+          "explanation": "The Heisenberg Uncertainty Principle states that the position and momentum of a subatomic particle cannot both be measured precisely at the same time.",
+          "cost_usd": 0.0075,
+          "attempts_required": 2
+        },
+        {
+          "item_number": 2,
+          "question": "What is the hybridization of carbon in benzene?",
+          "choices": [
+            "sp",
+            "sp2",
+            "sp3",
+            "sp3d"
+          ],
+          "correct_answer": "sp2",
+          "explanation": "Each carbon in benzene forms three sigma bonds in a planar configuration, resulting in sp2 hybridization.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        },
+        {
+          "item_number": 3,
+          "question": "Which thermodynamic property is defined as the measure of disorder in a system?",
+          "choices": [
+            "Enthalpy",
+            "Entropy",
+            "Gibbs Free Energy",
+            "Internal Energy"
+          ],
+          "correct_answer": "Entropy",
+          "explanation": "Entropy (S) measures the thermodynamic disorder or randomness of a closed system.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        },
+        {
+          "item_number": 4,
+          "question": "What is the conjugate base of the bisulfate ion (HSO4-)?",
+          "choices": [
+            "H2SO4",
+            "SO4(2-)",
+            "H3SO4+",
+            "SO3(2-)"
+          ],
+          "correct_answer": "SO4(2-)",
+          "explanation": "The conjugate base is formed by removing a proton (H+) from the bisulfate ion, yielding sulfate (SO4^2-).",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        },
+        {
+          "item_number": 5,
+          "question": "Which equation relates the cell potential of an electrochemical cell to the concentrations of the reactants?",
+          "choices": [
+            "Nernst Equation",
+            "Arrhenius Equation",
+            "Gibbs Equation",
+            "Henderson-Hasselbalch Equation"
+          ],
+          "correct_answer": "Nernst Equation",
+          "explanation": "The Nernst Equation relates the reduction potential of an electrochemical cell to the standard electrode potential, temperature, and activities of the chemical species.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        }
+      ]
+    },
+    {
+      "subject": "Secondary school biology",
+      "difficulty": "Intermediate",
+      "num_items": 5,
+      "total_cost_usd": 0.0225,
+      "items": [
+        {
+          "item_number": 1,
+          "question": "What is the primary site of photosynthesis in plant cells?",
+          "choices": [
+            "Mitochondria",
+            "Chloroplast",
+            "Ribosome",
+            "Golgi Apparatus"
+          ],
+          "correct_answer": "Chloroplast",
+          "explanation": "Chloroplasts contain chlorophyll which absorbs light energy to synthesize glucose during photosynthesis.",
+          "cost_usd": 0.0075,
+          "attempts_required": 2
+        },
+        {
+          "item_number": 2,
+          "question": "Which base pairs with Adenine in RNA molecules?",
+          "choices": [
+            "Thymine",
+            "Cytosine",
+            "Uracil",
+            "Guanine"
+          ],
+          "correct_answer": "Uracil",
+          "explanation": "In RNA, Uracil pairs with Adenine. Thymine pairs with Adenine only in DNA.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        },
+        {
+          "item_number": 3,
+          "question": "What is the process of cell division that results in four genetically diverse daughter cells?",
+          "choices": [
+            "Mitosis",
+            "Meiosis",
+            "Binary Fission",
+            "Cytokinesis"
+          ],
+          "correct_answer": "Meiosis",
+          "explanation": "Meiosis produces four haploid gametes (daughter cells), each with half the number of chromosomes of the parent cell, ensuring genetic diversity.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        },
+        {
+          "item_number": 4,
+          "question": "Which organelle is responsible for cellular respiration and ATP production?",
+          "choices": [
+            "Mitochondria",
+            "Lysosome",
+            "Endoplasmic Reticulum",
+            "Vacuole"
+          ],
+          "correct_answer": "Mitochondria",
+          "explanation": "Often called the powerhouses of the cell, mitochondria generate chemical energy in the form of ATP.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        },
+        {
+          "item_number": 5,
+          "question": "What is the movement of water molecules across a semipermeable membrane from low solute to high solute concentration?",
+          "choices": [
+            "Diffusion",
+            "Osmosis",
+            "Active Transport",
+            "Facilitated Diffusion"
+          ],
+          "correct_answer": "Osmosis",
+          "explanation": "Osmosis is the passive transport of water solvent molecules across a selectively permeable membrane.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        }
+      ]
+    }
+  ]
+}

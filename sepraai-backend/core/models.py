@@ -418,8 +418,86 @@ class CostAttribution(Base):
     )
 
 
+class ChemistryVideoJob(Base):
+    """
+    State table for AI Chemistry Video Request Service.
+    """
+    __tablename__ = "chemistry_video_jobs"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    concept: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(String(50), default="queued", nullable=False) # queued, processing, done, failed
+    video_path: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    retry_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=datetime.datetime.utcnow, nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow,
+        nullable=False,
+    )
+
+
+class QuizJob(Base):
+    """
+    State table for Quiz Generation Service.
+    """
+    __tablename__ = "quiz_jobs"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    subject: Mapped[str] = mapped_column(String(255), nullable=False)
+    difficulty: Mapped[str] = mapped_column(String(50), nullable=False)
+    num_items: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(50), default="pending", nullable=False) # pending, generating, completed, failed
+    total_cost: Mapped[float] = mapped_column(Numeric(10, 6), default=0.0, nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=datetime.datetime.utcnow, nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow,
+        nullable=False,
+    )
+
+    # Relationship to items
+    items: Mapped[list[QuizItem]] = relationship(
+        "QuizItem", back_populates="quiz_job", cascade="all, delete-orphan"
+    )
+
+
+class QuizItem(Base):
+    """
+    Individual quiz questions associated with a QuizJob.
+    """
+    __tablename__ = "quiz_items"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    quiz_job_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("quiz_jobs.id", ondelete="CASCADE"), nullable=False
+    )
+    question: Mapped[str] = mapped_column(Text, nullable=False)
+    choices: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False) # JSON list of choices
+    correct_answer: Mapped[str] = mapped_column(String(255), nullable=False)
+    explanation: Mapped[str] = mapped_column(Text, nullable=False)
+    cost_usd: Mapped[float] = mapped_column(Numeric(10, 6), default=0.0, nullable=False)
+    attempts: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime, default=datetime.datetime.utcnow, nullable=False
+    )
+
+    # Relationships
+    quiz_job: Mapped[QuizJob] = relationship("QuizJob", back_populates="items")
+
+
 # Indexing for rolling up costs by job and pool efficiently
 Index("idx_cost_attr_rollup", CostAttribution.video_part_job_id, CostAttribution.pool)
+Index("idx_chem_video_job_status", ChemistryVideoJob.status)
+Index("idx_quiz_job_status", QuizJob.status)
+Index("idx_quiz_item_job_id", QuizItem.quiz_job_id)
 
 
 # ── ORM Listeners ─────────────────────────────────────────────────────────
