@@ -233,6 +233,56 @@
           "attempts_required": 1
         }
       ]
+    },
+    {
+      "subject": "Secondary school mathematics",
+      "difficulty": "Intermediate",
+      "num_items": 3,
+      "total_cost_usd": 0.015,
+      "items": [
+        {
+          "item_number": 1,
+          "question": "What is the value of 21 - 3?",
+          "choices": [
+            "18",
+            "19",
+            "36",
+            "14"
+          ],
+          "correct_answer": "18",
+          "explanation": "Subtracting 3 from 21 gives 18.",
+          "cost_usd": 0.0075,
+          "attempts_required": 2
+        },
+        {
+          "item_number": 2,
+          "question": "What is the value of 8 x 9?",
+          "choices": [
+            "77",
+            "144",
+            "72",
+            "68"
+          ],
+          "correct_answer": "72",
+          "explanation": "Multiplying 8 by 9 gives 72.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        },
+        {
+          "item_number": 3,
+          "question": "What is the value of 11 + 10?",
+          "choices": [
+            "18",
+            "23",
+            "42",
+            "21"
+          ],
+          "correct_answer": "21",
+          "explanation": "Adding 11 and 10 gives 21.",
+          "cost_usd": 0.00375,
+          "attempts_required": 1
+        }
+      ]
     }
   ]
 }

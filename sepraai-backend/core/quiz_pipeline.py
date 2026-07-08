@@ -5,6 +5,7 @@ Implements LLM-as-judge validation, self-healing retry logic, and strict cost tr
 
 from __future__ import annotations
 
+import random
 import logging
 import uuid
 from typing import Any, TypedDict
@@ -137,6 +138,132 @@ PRE_BAKED_QUIZZES = {
 }
 
 
+# ── Dynamic Question Generator ────────────────────────────────────────────
+
+class DynamicQuestionGenerator:
+    """Dynamically generates real-looking questions on math, physics, geography, etc."""
+    @staticmethod
+    def generate(subject: str, difficulty: str, index: int) -> dict[str, Any]:
+        subj_lower = subject.lower()
+        diff_lower = difficulty.lower()
+        
+        # 1. Math generation (highly dynamic)
+        if "math" in subj_lower or "algebra" in subj_lower or "arithmetic" in subj_lower:
+            a = random.randint(5, 50)
+            b = random.randint(2, 10)
+            op = random.choice(["+", "-", "*"])
+            if op == "+":
+                ans = a + b
+                question = f"What is the value of {a} + {b}?"
+                explanation = f"Adding {a} and {b} gives {ans}."
+            elif op == "-":
+                ans = a - b
+                question = f"What is the value of {a} - {b}?"
+                explanation = f"Subtracting {b} from {a} gives {ans}."
+            else:
+                ans = a * b
+                question = f"What is the value of {a} x {b}?"
+                explanation = f"Multiplying {a} by {b} gives {ans}."
+                
+            choices = [str(ans), str(ans + random.randint(1, 5)), str(ans - random.randint(1, 5)), str(ans * 2)]
+            # Ensure unique options
+            choices = list(set(choices))
+            while len(choices) < 4:
+                choices.append(str(ans + len(choices) * 10))
+            choices = choices[:4]
+            # Ensure correct answer is in options
+            if str(ans) not in choices:
+                choices[0] = str(ans)
+            random.shuffle(choices)
+            
+            return {
+                "question": question,
+                "choices": choices,
+                "correct_answer": str(ans),
+                "explanation": explanation
+            }
+            
+        # 2. Physics generation
+        if "physic" in subj_lower:
+            physics_pool = [
+                {
+                    "question": "What is the SI unit of force?",
+                    "choices": ["Newton", "Joule", "Watt", "Pascal"],
+                    "correct_answer": "Newton",
+                    "explanation": "The Newton (N) is the SI unit of force."
+                },
+                {
+                    "question": "What is the speed of light in a vacuum?",
+                    "choices": ["3 x 10^8 m/s", "1.5 x 10^8 m/s", "3 x 10^6 m/s", "3 x 10^10 m/s"],
+                    "correct_answer": "3 x 10^8 m/s",
+                    "explanation": "The speed of light in a vacuum is exactly 299,792,458 m/s (~3 x 10^8 m/s)."
+                },
+                {
+                    "question": "Which particles reside in the nucleus of an atom?",
+                    "choices": ["Protons and Neutrons", "Protons and Electrons", "Neutrons and Electrons", "Electrons only"],
+                    "correct_answer": "Protons and Neutrons",
+                    "explanation": "Protons and neutrons form the nucleus, while electrons orbit around it."
+                },
+                {
+                    "question": "What is the acceleration due to gravity on Earth?",
+                    "choices": ["9.8 m/s^2", "8.9 m/s^2", "10.5 m/s^2", "7.2 m/s^2"],
+                    "correct_answer": "9.8 m/s^2",
+                    "explanation": "The standard acceleration of gravity on Earth is 9.8 m/s^2."
+                },
+                {
+                    "question": "Which of Newton's laws is also known as the Law of Inertia?",
+                    "choices": ["First Law", "Second Law", "Third Law", "Law of Gravitation"],
+                    "correct_answer": "First Law",
+                    "explanation": "Newton's First Law states that an object remains at rest or in motion unless acted upon by an external force."
+                }
+            ]
+            return dict(physics_pool[index % len(physics_pool)])
+
+        # 3. Geography generation
+        if "geography" in subj_lower or "earth" in subj_lower:
+            geo_pool = [
+                {
+                    "question": "What is the capital of France?",
+                    "choices": ["Paris", "London", "Berlin", "Rome"],
+                    "correct_answer": "Paris",
+                    "explanation": "Paris is the capital and most populous city of France."
+                },
+                {
+                    "question": "Which is the largest ocean on Earth?",
+                    "choices": ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Arctic Ocean"],
+                    "correct_answer": "Pacific Ocean",
+                    "explanation": "The Pacific Ocean is the largest and deepest of Earth's oceanic divisions."
+                },
+                {
+                    "question": "What is the longest river in the world?",
+                    "choices": ["Nile River", "Amazon River", "Yangtze River", "Mississippi River"],
+                    "correct_answer": "Nile River",
+                    "explanation": "The Nile is traditionally considered the longest river in the world, stretching 6,650 km."
+                },
+                {
+                    "question": "Which country has the largest population in the world?",
+                    "choices": ["India", "China", "United States", "Indonesia"],
+                    "correct_answer": "India",
+                    "explanation": "India is currently the most populous country in the world."
+                },
+                {
+                    "question": "Which is the tallest mountain on Earth?",
+                    "choices": ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"],
+                    "correct_answer": "Mount Everest",
+                    "explanation": "Mount Everest is Earth's highest mountain above sea level, located in the Himalayas."
+                }
+            ]
+            return dict(geo_pool[index % len(geo_pool)])
+
+        # 4. Fallback default
+        return {
+            "question": f"What is the main focus of study in {subject} at {difficulty} level (Item {index + 1})?",
+            "choices": ["Core theories and formulas", "History and development", "Practical experiments", "All of the above"],
+            "correct_answer": "All of the above",
+            "explanation": f"Study of {subject} at {difficulty} level typically encompasses theory, history, and practice."
+        }
+
+
 # ── Pipeline Agents ───────────────────────────────────────────────────────
 
 class CreatorAgent:
@@ -154,13 +281,8 @@ class CreatorAgent:
         if key in PRE_BAKED_QUIZZES and index < len(PRE_BAKED_QUIZZES[key]):
             item = dict(PRE_BAKED_QUIZZES[key][index])
         else:
-            # Fallback dynamic mock item
-            item = {
-                "question": f"Sample question {index + 1} about {subject} ({difficulty})",
-                "choices": ["Option A", "Option B", "Option C", "Option D"],
-                "correct_answer": "Option A",
-                "explanation": f"Explanation for sample question {index + 1}."
-            }
+            # Fallback dynamic generated item
+            item = DynamicQuestionGenerator.generate(subject, difficulty, index)
 
         # Simulating token count for Creator call
         input_tokens = 250
@@ -234,9 +356,7 @@ class RepairAgent:
         if key in PRE_BAKED_QUIZZES and index < len(PRE_BAKED_QUIZZES[key]):
             repaired_item = dict(PRE_BAKED_QUIZZES[key][index])
         else:
-            repaired_item = dict(item)
-            repaired_item["choices"] = ["Option A", "Option B", "Option C", "Option D"]
-            repaired_item["correct_answer"] = "Option A"
+            repaired_item = DynamicQuestionGenerator.generate(subject, difficulty, index)
 
         input_tokens = 350
         output_tokens = 160

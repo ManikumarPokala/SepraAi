@@ -19,7 +19,8 @@ from core.quiz_pipeline import run_quiz_item_pipeline
 TEST_CASES = [
     {"subject": "Secondary school chemistry", "difficulty": "Beginner", "num_items": 5},
     {"subject": "Secondary school chemistry", "difficulty": "Advanced", "num_items": 5},
-    {"subject": "Secondary school biology", "difficulty": "Intermediate", "num_items": 5}
+    {"subject": "Secondary school biology", "difficulty": "Intermediate", "num_items": 5},
+    {"subject": "Secondary school mathematics", "difficulty": "Intermediate", "num_items": 3}
 ]
 
 
