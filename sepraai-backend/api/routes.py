@@ -76,7 +76,9 @@ async def generate_curriculum(payload: CurriculumJobCreate) -> Any:
             session.add(job)
 
             # Create a style GCM
+            gcm_id = uuid.uuid4()
             gcm = GlobalContextManifest(
+                id=gcm_id,
                 curriculum_job=job,
                 style_data={"primary": "#3B82F6", "secondary": "#10B981", "background": "#0F172A"},
                 is_locked=False,
@@ -86,7 +88,7 @@ async def generate_curriculum(payload: CurriculumJobCreate) -> Any:
             # Create VideoPartJob 1 (Chapter 1)
             part1 = VideoPartJob(
                 curriculum_job=job,
-                gcm=gcm,
+                gcm_id=gcm_id,
                 part_number=1,
                 status=JobStatus.PENDING,
             )
@@ -115,7 +117,7 @@ async def generate_curriculum(payload: CurriculumJobCreate) -> Any:
             # Create VideoPartJob 2 (Chapter 2)
             part2 = VideoPartJob(
                 curriculum_job=job,
-                gcm=gcm,
+                gcm_id=gcm_id,
                 part_number=2,
                 status=JobStatus.PENDING,
             )
