@@ -102,5 +102,5 @@ Execute the self-contained offline test runner to verify sandbox boundaries, ide
 ```bash
 python3 run_offline_tests.py
 ```
-*Result: 18 tests passed, 0 failures (100% success).*
+*Result: 23 tests passed, 0 failures (100% success).*
 # SepraAi
